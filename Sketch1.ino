@@ -6,7 +6,7 @@
 int trig[] = { 13,12,11,10,9 };
 int echo[] = { 7,6,5,4,3 };
 int i;
-
+//add from VS direct
 
 class Data
 {
