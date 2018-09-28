@@ -1,4 +1,3 @@
-
 #define radius 5    //cm
 #define theta 0.523   //radians
 #define halfwidth 15  //cm
@@ -114,4 +113,58 @@ void loop()
   obj.showHorz();
   //obj.isClear();
   //obj.chooseDirection();
+}
+	void isClear()
+	{
+		int temp = 0;
+		for (i = 0; i < NOS; i++)
+		{
+			if (i == NOS/2)
+			{
+				if (raw[i] > length)
+					clearSide[i] = 1;
+				else
+				{
+					clearSide[i] = 0;
+					temp++;
+				}
+				i++;
+			}
+			if (horz[i] > halfwidth)
+				clearSide[i] = 1;
+			else
+			{
+				clearSide[i] = 0;
+				temp++;
+			}
+		}
+
+		if (temp == 0)
+			Serial.println("Front Side Clear!!!!");
+		else
+			Serial.println("Can't go Straight !!!!!!!");
+	}
+
+	void chooseDirection(){
+	
+	}
+}obj;
+void setup() {
+
+	for (i = 0; i < NOS; i++) {
+
+		pinMode(trig[i], OUTPUT);
+		pinMode(echo[i], INPUT);
+	}
+	Serial.begin(9600);
+}
+
+// the loop function runs over and over again until power down or reset
+void loop() {
+	obj.getInput();
+	//obj.showRaw();
+	obj.showHorz();
+	obj.isClear();
+	//obj.chooseDirection();
+	delay(500);
 }
