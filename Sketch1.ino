@@ -5,9 +5,9 @@ const int m[4][2] = { {24,26},{34,36},{38,40},{42,44} };
 #define halfwidth 40  //cm
 #define length 40    //cm
 #define NOS 5    //Number of sensors
-#define SPEED 100 //Sets the PWM speed for motors.
-int trig[] = { 39,37,35,31,31 };
-int echo[] = { 7,6,5,3,3 };
+#define SPEED 50 //Sets the PWM speed for motors.
+int trig[] = { 39,37,35,33,31 };
+int echo[] = { 7,6,5,4,3 };
 int i;
 
 //int trig[] = { 39,37,35,33,31 };
@@ -107,19 +107,17 @@ public:
 		{
 			if (i < NOS / 2)
 			{
-				lh += horz[i];
+				//lh += horz[i];
 				ls += raw[i];
 			}
 			if (i > NOS / 2)
 			{
-				rh += horz[i];
+				//rh += horz[i];
 				rs += raw[i];
 			}
 		}
 		ls /= NOS / 2;
 		rs /= NOS / 2;
-		lh /= NOS / 2;
-		rh /= NOS / 2;
 		if (ls > rs)		/*********COMPARING FEASIBILTY OF LEFT OVER RIGHT********/
 			left(); 
 		else
