@@ -2,9 +2,10 @@ const int pwm[4] = { 8,9,10,11 };
 const int m[4][2] = { {24,26},{34,36},{38,40},{42,44} };
 #define radius 5    //cm
 #define theta 0.523   //radians
-#define halfwidth 15  //cm
-#define length 10    //cm
+#define halfwidth 40  //cm
+#define length 40    //cm
 #define NOS 5    //Number of sensors
+#define SPEED 100 //Sets the PWM speed for motors.
 int trig[] = { 39,37,35,31,31 };
 int echo[] = { 7,6,5,3,3 };
 int i;
@@ -44,7 +45,7 @@ public:
 
 
 	}
-	void showRaw()
+	void showRaw()			/***********ONLY TO PRINT RAW VALUES*********/
 	{
 		for (i = 0; i < NOS; i++)
 		{
@@ -53,14 +54,14 @@ public:
 			Serial.println(raw[i]);
 		}
 	}
-	void showHorz() {
+	void showHorz() {		/***********ONLY TO PRINT CALCULATED HORIZONTAL VALUES*********/
 		for (i = 0; i < NOS; i++) {
 			Serial.print(i);
 			Serial.print(" : ");
 			Serial.println(horz[i]);
 		}
 	}
-	void isClear()
+	void isClear()			/*CHECKS AND DECIDES WHICH SIDE IS CLEAR*/
 	{
 		getInput();
 		int temp = 0;
@@ -72,12 +73,12 @@ public:
 					clearSide[i] = 1;
 				else
 				{
-					clearSide[i] = 0; //obstacle present
+					clearSide[i] = 0; /*THIS SIDE IS NOT CLEAR, OBJECT IS THERE*/
 					temp++;
 				}
 				i++;
 			}
-			if (horz[i] > halfwidth) //rover can pass through
+			if (horz[i] > halfwidth) /*DETECTED OBJECT WILL NOT COLLIDE*/
 				clearSide[i] = 1;
 			else
 			{
@@ -119,15 +120,12 @@ public:
 		rs /= NOS / 2;
 		lh /= NOS / 2;
 		rh /= NOS / 2;
-		if (ls > rs)
-			dr = -1; //if left path is a better path to be followed
-	  /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		if (dr == -1) //left motion
-		{
-			left();
-		}
+		if (ls > rs)		/*********COMPARING FEASIBILTY OF LEFT OVER RIGHT********/
+			left(); 
 		else
 			right();
+
+		/********************** DIRECTION OF MOTION HAS NOW BEEN DECIDED********************/
 	}
 
 	void forward()
@@ -162,28 +160,25 @@ public:
 	{
 		Serial.println("RIGHT RIGHT RIGHT RIGHT RIGHT RIGHT");
 		pwmslow();
-		digitalWrite(m[0][0], HIGH);
-		digitalWrite(m[0][1], LOW);
-		digitalWrite(m[1][0], HIGH);
-		digitalWrite(m[1][1], LOW);
-		digitalWrite(m[2][0], LOW);
-		digitalWrite(m[2][1], HIGH);
-		digitalWrite(m[3][0], LOW);
-		digitalWrite(m[3][1], HIGH);
-	}
-
-	void stopp()
-	{
-		Serial.println("STOP STOP STOP STOP STOP STOP STOP STOP STOP");
-		for (int i = 0; i < 4; i++)
-			analogWrite(pwm[i], 0);
+		for (i = 0; i < 4; i++)
+		{
+			if (i < 2) {
+				digitalWrite(m[i][0], HIGH);
+				digitalWrite(m[i][1], LOW);
+			}
+			else {
+				digitalWrite(m[i][0], LOW);
+				digitalWrite(m[i][1], HIGH);
+			}
+		}
 	}
 
 	void setPwm()
-	{ //Serial.println("SPEED SLOW");
+	{ 
 		for (int i = 0; i < 4; i++)
-			analogWrite(pwm[i], 100);
+			analogWrite(pwm[i], SPEED);
 	}
+
 
 }obj;
 
@@ -208,8 +203,7 @@ void setup() {
 
 void loop() {
 	//obj.showRaw();
-	obj.showHorz();
+	//obj.showHorz();
 	obj.isClear();
-	//obj.chooseDirection();
-	//delay(500);
+	
 }
