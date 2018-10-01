@@ -1,13 +1,13 @@
-const int pwm[4] = { 8,9,10,11 };
-const int m[4][2] = { {24,26},{34,36},{38,40},{42,44} };
+const int pwm[4] = { 5,6,7,8 };
+const int m[4][2] = { {51,53},{47,49},{22,24},{26,28} };
 #define radius 5    //cm
 #define theta 0.523   //radians
 #define halfwidth 40  //cm
 #define length 40    //cm
 #define NOS 5    //Number of sensors
 #define SPEED 100 //Sets the PWM speed for motors.
-int trig[] = { 39,37,35,31,31 };
-int echo[] = { 7,6,5,3,3 };
+int trig[] = { 52,50,34,32,30 };	//same
+int echo[] = { 13,12,11,10,9 };		//left to right
 int i;
 
 //int trig[] = { 39,37,35,33,31 };
