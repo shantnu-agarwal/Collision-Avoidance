@@ -76,10 +76,9 @@ public:
         }
         i++;
       }
-      if (horz[i] < halfwidth) /*DETECTED OBJECT WILL NOT COLLIDE*/
-        
+      if (horz[i] < halfwidth) /*DETECTED OBJECT WILL COLLIDE*/
       {
-        
+		
         temp++;
       }
     }
