@@ -1,7 +1,6 @@
 #include <SPI.h>
 #include <Wire.h>
-#include <MPU6050.h>
-
+			/************CONSTANT FOR ULTRASONICS***************/
 const int pwm[4] = { 5,6,7,8 };
 const int m[4][2] = { {51,53},{47,49},{22,24},{26,28} };
 #define radius 5		//cm // old 5
@@ -14,10 +13,7 @@ int trig[] = { 52,50,34,32,30 };  //same
 int echo[] = { 13,12,11,10,9 };   //left to right
 int i;
 
-
-
-MPU6050 mpu;
-
+			/************CONSTANT FOR GYROSCOPE***************/
 int gyro_x, gyro_y, gyro_z;
 long gyro_x_cal, gyro_y_cal, gyro_z_cal;
 boolean set_gyro_angles;
@@ -31,7 +27,8 @@ float angle_pitch_output, angle_roll_output;
 
 long loop_timer;
 int temp;
-
+void gyroMaths();
+void sendData(int);
 
 
 
@@ -97,7 +94,9 @@ public:
 		}
 		else{
 			Serial.println("Can't go Straight !!!!!!!");
-			chooseDirection();
+			gyroMaths();
+			if(angle_pitch_output > 45)
+				chooseDirection();
 		}
 	}
 
@@ -149,12 +148,13 @@ public:
 void sendData(int value) {					//SENDS SPI DATA
 	SPI.begin();
 	SPI.transfer((char)value);
-
+	Serial.print("Value sent is ");
+	Serial.println((char)value);
 }
 
 void gyroMaths() {
-	float TEMP = mpu.readTemperature();
-	read_mpu_6050_data();
+	
+	read_mpu_data();
 
 	gyro_x -= gyro_x_cal;
 	gyro_y -= gyro_y_cal;
@@ -176,29 +176,26 @@ void gyroMaths() {
 	angle_pitch_acc -= 0.0;                                              //Accelerometer calibration value for pitch
 	angle_roll_acc -= 0.0;                                               //Accelerometer calibration value for roll
 
-	if (set_gyro_angles) {                                                 //If the IMU is already started
-		angle_pitch = angle_pitch * 0.9996 + angle_pitch_acc * 0.0004;     //Correct the drift of the gyro pitch angle with the accelerometer pitch angle
-		angle_roll = angle_roll * 0.9996 + angle_roll_acc * 0.0004;        //Correct the drift of the gyro roll angle with the accelerometer roll angle
+	if (set_gyro_angles) {													//If the IMU is already started
+		angle_pitch = angle_pitch * 0.9996 + angle_pitch_acc * 0.0004;		//Correct the drift of the gyro pitch angle with the accelerometer pitch angle
+		angle_roll = angle_roll * 0.9996 + angle_roll_acc * 0.0004;			//Correct the drift of the gyro roll angle with the accelerometer roll angle
 	}
-	else {                                                                //At first start
-		angle_pitch = angle_pitch_acc;                                     //Set the gyro pitch angle equal to the accelerometer pitch angle 
-		angle_roll = angle_roll_acc;                                       //Set the gyro roll angle equal to the accelerometer roll angle 
-		set_gyro_angles = true;                                            //Set the IMU started flag
+	else {																	//At first start
+		angle_pitch = angle_pitch_acc;										//Set the gyro pitch angle equal to the accelerometer pitch angle 
+		angle_roll = angle_roll_acc;										//Set the gyro roll angle equal to the accelerometer roll angle 
+		set_gyro_angles = true;												//Set the IMU started flag
 	}
-
 
 	angle_pitch_output = angle_pitch_output * 0.9 + angle_pitch * 0.1;
 	angle_roll_output = angle_roll_output * 0.9 + angle_roll * 0.1;
-	Serial.print(" | Angle  = "); Serial.print(angle_pitch_output);
-	Serial.print(" | Roll   = "); Serial.print(angle_roll_output);
-	Serial.print(" | Temp   = "); Serial.println(TEMP);
-	while (micros() - loop_timer < 4000);                                 //Wait until the loop_timer reaches 4000us (250Hz) before starting the next loop
+	//Serial.print(" | Angle  = "); Serial.print(angle_pitch_output);
+	//Serial.print(" | Roll   = "); Serial.print(angle_roll_output);
+	while (micros() - loop_timer < 4000);									//Wait until the loop_timer reaches 4000us (250Hz) before starting the next loop
 	loop_timer = micros();
-
 }
 
 
-void setup_mpu_6050_registers() {
+void setup_mpu_registers() {
 	
 	Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
 	Wire.write(0x6B);                                                    //Send the requested starting register
@@ -217,7 +214,7 @@ void setup_mpu_6050_registers() {
 }
 
 
-void read_mpu_6050_data() {                                             //Subroutine for reading the raw gyro and accelerometer data
+void read_mpu_data() {                                             //Subroutine for reading the raw gyro and accelerometer data
 	Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
 	Wire.write(0x3B);                                                    //Send the requested starting register
 	Wire.endTransmission();                                              //End the transmission
@@ -235,7 +232,6 @@ void read_mpu_6050_data() {                                             //Subrou
 void setup() {
 
 	/*******************SETUP THE ULTRASONICS*************/
-	Serial.begin(9600);
 	for (int i = 0; i < 4; i++)
 		pinMode(pwm[i], OUTPUT);
 	for (int i = 0; i < 4; i++)
@@ -247,32 +243,25 @@ void setup() {
 	}
 	/************SETUP THE GYRO***************/
 	Wire.begin();
-	mpu.begin(MPU6050_SCALE_2000DPS, MPU6050_RANGE_2G);
-	setup_mpu_6050_registers();
+	setup_mpu_registers();
 	for (int cal_int = 0; cal_int < 1000; cal_int++) {                  //Read the raw acc and gyro data from the MPU-6050 for 1000 times
-		read_mpu_6050_data();
+		read_mpu_data();
 		gyro_x_cal += gyro_x;                                              //Add the gyro x offset to the gyro_x_cal variable
 		gyro_y_cal += gyro_y;                                              //Add the gyro y offset to the gyro_y_cal variable
 		gyro_z_cal += gyro_z;                                              //Add the gyro z offset to the gyro_z_cal variable
 		delay(3);                                                          //Delay 3us to have 250Hz for-loop
 	}
 
-	
 	gyro_x_cal /= 1000;
 	gyro_y_cal /= 1000;
 	gyro_z_cal /= 1000;
 	Serial.begin(115200);
 	loop_timer = micros();                                               //Reset the loop timer
 }
-}
+
 
 void loop() {
 	//obj.showRaw();
 	//obj.showHorz();
 	obj.isClear();
-	gyroMaths();
-
 }
-
-
-

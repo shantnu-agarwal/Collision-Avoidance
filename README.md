@@ -1,4 +1,4 @@
-# Colliison-Avoidance
+# Collision-Avoidance
 
 Sketch1.ino avoids with differential drive
 
