@@ -1,15 +1,15 @@
-#include<SPI.h>
+#include <SPI.h>
 #include <Wire.h>
-#include<MPU6050.h>
+#include <MPU6050.h>
 
 const int pwm[4] = { 5,6,7,8 };
 const int m[4][2] = { {51,53},{47,49},{22,24},{26,28} };
-#define radius 5    //cm // old 5
-#define theta 0.523   //radians // old 0.523
-#define halfwidth 45  //cm
-#define length 45    //cm
-#define NOS 5    //Number of sensors
-#define SPEED 100 //Sets the PWM speed for motors.
+#define radius 5		//cm // old 5
+#define theta 0.523		//radians // old 0.523
+#define halfwidth 45	//cm
+#define length 45		//cm
+#define NOS 7			//Number of sensors
+#define SPEED 100		//Sets the PWM speed for motors.
 int trig[] = { 52,50,34,32,30 };  //same
 int echo[] = { 13,12,11,10,9 };   //left to right
 int i;
@@ -195,23 +195,21 @@ void gyroMaths() {
 	while (micros() - loop_timer < 4000);                                 //Wait until the loop_timer reaches 4000us (250Hz) before starting the next loop
 	loop_timer = micros();
 
-
 }
 
 
-
 void setup_mpu_6050_registers() {
-	//Activate the MPU-6050
+	
 	Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
 	Wire.write(0x6B);                                                    //Send the requested starting register
 	Wire.write(0x00);                                                    //Set the requested starting register
 	Wire.endTransmission();
-	//Configure the accelerometer (+/-8g)
+	
 	Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
 	Wire.write(0x1C);                                                    //Send the requested starting register
 	Wire.write(0x10);                                                    //Set the requested starting register
 	Wire.endTransmission();
-	//Configure the gyro (500dps full scale)
+	
 	Wire.beginTransmission(0x68);                                        //Start communicating with the MPU-6050
 	Wire.write(0x1B);                                                    //Send the requested starting register
 	Wire.write(0x08);                                                    //Set the requested starting register
@@ -259,7 +257,7 @@ void setup() {
 		delay(3);                                                          //Delay 3us to have 250Hz for-loop
 	}
 
-	// divide by 1000 to get avarage offset
+	
 	gyro_x_cal /= 1000;
 	gyro_y_cal /= 1000;
 	gyro_z_cal /= 1000;
