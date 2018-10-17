@@ -1,6 +1,6 @@
-//SDA  -  A4
+//SDA  -  A4 uno ke liye
 //SCL  -  A5
-//INT - port-2
+//INT - Not using 
 //Try the temperature sensor toooo
 #include <Wire.h>
 #include<MPU6050.h>

@@ -2,7 +2,7 @@
 
 Sketch1.ino avoids with differential drive
 
-### Sketch 1 is the FINAL BUILD SYSTEM.
+### Sketch 1 is the FINAL DRIVE SYSTEM.
 
 ### Compilation is the FINAL COMPLETE CODE.
 
