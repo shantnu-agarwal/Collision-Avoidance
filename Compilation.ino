@@ -200,7 +200,7 @@ void setup_mpu_registers() {
 	
 	Wire.beginTransmission(0x68);                                        //Start communicating with the MPU
 	Wire.write(0x6B);                                                    //Send the requested starting register
-	Wire.write(0x00);                                                    //Set the requested starting register
+	Wire.write(0x00);													//Set the requested starting register
 	Wire.endTransmission();
 	
 	Wire.beginTransmission(0x68);                                        //Start communicating with the MPU
