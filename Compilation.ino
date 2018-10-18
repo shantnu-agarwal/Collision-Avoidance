@@ -30,7 +30,9 @@ void gyroMaths();
 void sendData(int);
 
 
-
+			/*************FOR ARDUINO-PI COMM.************/
+int data;
+int ss = 53;
 
 class Data {
 
@@ -146,12 +148,7 @@ public:
 
 }obj;
 
-void sendData(int value) {					//SENDS SPI DATA
-	SPI.begin();
-	SPI.transfer((char)value);
-	/*Serial.print("Value sent is ");
-	Serial.println((char)value);*/
-}
+
 
 void gyroMaths() {
 	
@@ -195,6 +192,18 @@ void gyroMaths() {
 	loop_timer = micros();
 }
 
+void sendData(int value) {					//SENDS SPI DATA
+	
+	digitalWrite(ss,LOW);
+	if ((SPSR & (1 << SPIF)) != 0) 
+      {
+          SPDR=a;
+          Serial.print("Sending ");
+          Serial.println(a);   
+      }
+	digitalWrite(ss, HIGH);
+	//delay(20);
+}
 
 void setup_mpu_registers() {
 	
@@ -258,6 +267,15 @@ void setup() {
 	gyro_z_cal /= 1000;
 	Serial.begin(115200);
 	loop_timer = micros();                                               //Reset the loop timer
+
+	/*************SETUP THE SPI B/W ARDUINO-PI*********/
+	SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));
+	Serial.begin(9600);
+	pinMode(MISO, OUTPUT);
+	pinMode(ss, OUTPUT);
+	SPCR |= _BV(SPE);
+
+
 }
 
 void loop() {
