@@ -8,8 +8,8 @@
 #define length 45		//cm
 #define NOS 5			//Number of sensors
 
-int trig[] = { 52,50,34,32,30 };  //same
-int echo[] = { 13,12,11,10,9 };   //left to right
+int trig[] = { 27,31,47,35,39 };  //same
+int echo[] = { 29,33,49,37,41 };   //left to right
 int i;
 
 			/************CONSTANT FOR GYROSCOPE***************/
@@ -27,12 +27,12 @@ float angle_pitch_output, angle_roll_output;
 long loop_timer;
 int  temp;
 void gyroMaths();
-void sendData(int);
+void read_mpu_data();
 
 
 			/*************FOR ARDUINO-PI COMM.************/
-int data;
-int ss = 53;
+int valuex;
+
 
 class Data {
 
@@ -133,21 +133,31 @@ public:
 
 	void forward(){
 		//Serial.println("FORWARD FORWARD FORWARD FORWARD FORWARD FORWARD");
-		sendData(128);
+		valuex=97;	//should be 128 but cant sent 128 on SPI
 	}
 
 	void left(){
 		//Serial.println("LEFT LEFT LEFT LEFT LEFT LEFT LEFT");
-		sendData(64);
+		valuex=64;
     }
 
 	void right(){
 	    //Serial.println("RIGHT RIGHT RIGHT RIGHT RIGHT RIGHT");
-		sendData(16);
+		valuex=16;
     }
 
 }obj;
 
+ISR (SPI_STC_vect)
+  {
+    byte c = SPDR;
+//    Serial.print("Rec: ");
+//    Serial.print(c);
+    SPDR = valuex;
+//    Serial.print("\t Send : ");
+//    Serial.println(valuex);
+//    Serial.println("Interrupt");
+  }
 
 
 void gyroMaths() {
@@ -192,18 +202,6 @@ void gyroMaths() {
 	loop_timer = micros();
 }
 
-void sendData(int value) {					//SENDS SPI DATA
-	
-	digitalWrite(ss,LOW);
-	if ((SPSR & (1 << SPIF)) != 0) 
-      {
-          SPDR=a;
-          Serial.print("Sending ");
-          Serial.println(a);   
-      }
-	digitalWrite(ss, HIGH);
-	//delay(20);
-}
 
 void setup_mpu_registers() {
 	
@@ -242,11 +240,6 @@ void read_mpu_data() {                                             //Subroutine 
 void setup() {
 
 	/*******************SETUP THE ULTRASONICS*************/
-	for (int i = 0; i < 4; i++)
-		pinMode(pwm[i], OUTPUT);
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 2; j++)
-			pinMode(m[i][j], OUTPUT);
 	for (i = 0; i < NOS; i++) {
 		pinMode(trig[i], OUTPUT);
 		pinMode(echo[i], INPUT);
@@ -279,6 +272,7 @@ void setup() {
 }
 
 void loop() {
+	//obj.getInput();
 	//obj.showRaw();
 	//obj.showHorz();
 	obj.isClear();
