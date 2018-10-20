@@ -13,3 +13,5 @@ Project made with Team Rudra to use ODD number of sensors to implement obstacle 
 Gyroscope provides dual angle position
 
 ### GYRO now works with Temperature
+
+## Drive signals from Arduino to Pi through SPI. 
