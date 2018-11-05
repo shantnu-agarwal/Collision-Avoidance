@@ -130,7 +130,8 @@ public:
 
     /********************** DIRECTION OF MOTION HAS NOW BEEN DECIDED********************/
 	}
-
+	
+	//Do not need seperate frwd,lft,rght functions, but they help to debug.
 	void forward(){
 		//Serial.println("FORWARD FORWARD FORWARD FORWARD FORWARD FORWARD");
 		valuex=97;	//should be 128 but cant sent 128 on SPI
